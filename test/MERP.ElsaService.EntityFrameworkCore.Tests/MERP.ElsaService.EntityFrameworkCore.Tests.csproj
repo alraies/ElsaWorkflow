@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>MERP.ElsaService</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MERP.ElsaService.EntityFrameworkCore\MERP.ElsaService.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\MERP.ElsaService.TestBase\MERP.ElsaService.TestBase.csproj" />
+    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="7.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+  </ItemGroup>
+
+</Project>
