@@ -1,4 +1,5 @@
 using System.IO;
+using System.Reflection;
 using Elsa;
 using Elsa.Persistence.EntityFramework.Core.Extensions;
 using Elsa.Persistence.EntityFramework.SqlServer;
@@ -15,9 +16,12 @@ using MERP.ElsaService.Localization;
 using MERP.ElsaService.MultiTenancy;
 using MERP.ElsaService.Web.Menus;
 using MERP.ElsaService.Web.Workflows;
+using MERP.ElsaService.Workflows.Activities;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using Volo.Abp;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Mvc;
@@ -105,6 +109,10 @@ public class ElsaServiceWebModule : AbpModule
         ConfigureSwaggerServices(context.Services);
         ConfigureElsa(context, configuration);
         ConfigureHangfire(context, configuration);
+        context.Services.AddLogging(loggingBuilder =>
+        {
+            loggingBuilder.AddSeq();
+        });
     }
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
     {
@@ -125,10 +133,11 @@ public class ElsaServiceWebModule : AbpModule
                 .AddHttpActivities(elsaSection.GetSection("Server").Bind)
                 .AddQuartzTemporalActivities()
                 .AddJavaScriptActivities()
-                .AddWorkflowsFrom<Startup>();
-            options.AddConsoleActivities()
-                .AddHttpActivities() //add this line to be able to use the http activities
-                .AddWorkflow<HelloWorldHttp>(); //workflow that
+                .AddWorkflowsFrom<Startup>()
+                ;
+            
+            options.AddActivity<LeaveRequestActivity>();
+            options.AddActivity<CancelAbsenceActivity>();
         });
 
         context.Services.AddElsaApiEndpoints();
@@ -254,14 +263,12 @@ public class ElsaServiceWebModule : AbpModule
         app.UseUnitOfWork();
         app.UseAuthorization();
         app.UseSwagger();
-        app.UseAbpSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "ElsaService API"); });
+        app.UseAbpSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "ElsaService API"); options.DocExpansion(DocExpansion.None); });
         app.UseAuditing();
         app.UseAbpSerilogEnrichers();
         app.UseHttpActivities();
         app.UseHangfireDashboard();
         app.UseConfiguredEndpoints();
 
-        var workflowRunner = context.ServiceProvider.GetRequiredService<IBuildsAndStartsWorkflow>();
-        workflowRunner.BuildAndStartWorkflowAsync<HelloWorldHttp>();
     }
 }

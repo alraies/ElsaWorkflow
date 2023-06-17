@@ -13,17 +13,21 @@ public class Program
     public async static Task<int> Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
-#if DEBUG
-            .MinimumLevel.Debug()
-#else
-            .MinimumLevel.Information()
-#endif
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
-            .Enrich.FromLogContext()
-            .WriteTo.Async(c => c.File("Logs/logs.txt"))
-            .WriteTo.Async(c => c.Console())
+            .WriteTo.Console()
+            .WriteTo.Seq("http://localhost:5341")
             .CreateLogger();
+//         Log.Logger = new LoggerConfiguration()
+// #if DEBUG
+//             .MinimumLevel.Debug()
+// #else
+//             .MinimumLevel.Information()
+// #endif
+//             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+//             .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+//             .Enrich.FromLogContext()
+//             .WriteTo.Async(c => c.File("Logs/logs.txt"))
+//             .WriteTo.Async(c => c.Console())
+//             .CreateLogger();
 
         try
         {

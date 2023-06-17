@@ -1,4 +1,4 @@
-﻿using MERP.ElsaService.Localization;
+using MERP.ElsaService.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
 
@@ -12,6 +12,11 @@ public class ElsaServicePermissionDefinitionProvider : PermissionDefinitionProvi
         //Define your own permissions here. Example:
         //myGroup.AddPermission(ElsaServicePermissions.MyPermission1, L("Permission:MyPermission1"));
         myGroup.AddPermission(ElsaServicePermissions.ElsaDashboard, L("Permission:ElsaDashboard"));
+
+        var absencePermission = myGroup.AddPermission(ElsaServicePermissions.Absence.Default, L("Permission:Absence"));
+        absencePermission.AddChild(ElsaServicePermissions.Absence.Create, L("Permission:Create"));
+        absencePermission.AddChild(ElsaServicePermissions.Absence.Update, L("Permission:Update"));
+        absencePermission.AddChild(ElsaServicePermissions.Absence.Delete, L("Permission:Delete"));
     }
 
     private static LocalizableString L(string name)

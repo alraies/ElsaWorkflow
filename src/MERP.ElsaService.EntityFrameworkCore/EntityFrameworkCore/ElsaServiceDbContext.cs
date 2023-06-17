@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+using MERP.ElsaService.Entities.Employees;
+using MERP.ElsaService.Entities.LeaveBalances;
+using MERP.ElsaService.Entities.Leaves;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.EntityFrameworkCore.Modeling;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
@@ -12,6 +16,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using MERP.ElsaService.Entities.Absences;
 
 namespace MERP.ElsaService.EntityFrameworkCore;
 
@@ -24,7 +29,10 @@ public class ElsaServiceDbContext :
     ITenantManagementDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
-
+    public DbSet<Employee> Employees { get; set; }
+    public DbSet<Leave> Leaves { get; set; }
+    public DbSet<LeaveBalance> LeaveBalances { get; set; }
+    
     #region Entities from the modules
 
     /* Notice: We only implemented IIdentityDbContext and ITenantManagementDbContext
@@ -52,6 +60,7 @@ public class ElsaServiceDbContext :
     public DbSet<TenantConnectionString> TenantConnectionStrings { get; set; }
 
     #endregion
+    public DbSet<Absence> Absences { get; set; }
 
     public ElsaServiceDbContext(DbContextOptions<ElsaServiceDbContext> options)
         : base(options)
@@ -76,11 +85,35 @@ public class ElsaServiceDbContext :
 
         /* Configure your own tables/entities inside here */
 
-        //builder.Entity<YourEntity>(b =>
-        //{
-        //    b.ToTable(ElsaServiceConsts.DbTablePrefix + "YourEntities", ElsaServiceConsts.DbSchema);
-        //    b.ConfigureByConvention(); //auto configure for the base class props
-        //    //...
-        //});
+        builder.Entity<Employee>(b =>
+        {
+            b.ToTable(ElsaServiceConsts.DbTablePrefix + "Employees", ElsaServiceConsts.DbSchema);
+            b.ConfigureByConvention(); //auto configure for the base class props
+            //...
+        });
+        
+        builder.Entity<Leave>(b =>
+        {
+            b.ToTable(ElsaServiceConsts.DbTablePrefix + "Leaves", ElsaServiceConsts.DbSchema);
+            b.ConfigureByConvention(); //auto configure for the base class props
+            //...
+        });
+        
+        builder.Entity<LeaveBalance>(b =>
+        {
+            b.ToTable(ElsaServiceConsts.DbTablePrefix + "LeaveBalances", ElsaServiceConsts.DbSchema);
+            b.ConfigureByConvention(); //auto configure for the base class props
+            //...
+        });
+
+
+        builder.Entity<Absence>(b =>
+        {
+            b.ToTable(ElsaServiceConsts.DbTablePrefix + "Absences", ElsaServiceConsts.DbSchema);
+            b.ConfigureByConvention(); 
+            
+
+            /* Configure more properties here */
+        });
     }
 }
